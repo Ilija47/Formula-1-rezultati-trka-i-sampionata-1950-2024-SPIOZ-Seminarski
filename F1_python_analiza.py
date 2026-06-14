@@ -150,6 +150,47 @@ plt.ylabel("Broj redova")
 plt.xticks(rotation=0)
 sacuvaj_sliku("01_raspodela_ciljne_promenljive.png")
 
+
+korelacione_kolone = [
+    "Godina",
+    "BrojPobeda",
+    "BrojNajbrzihKrugova",
+    "Top3Plasman",
+]
+
+korelacije = podaci_model[korelacione_kolone].corr()
+
+plt.figure(figsize=(8, 6))
+plt.imshow(korelacije, cmap="Blues", vmin=-1, vmax=1)
+plt.colorbar(label="Koeficijent korelacije")
+plt.xticks(np.arange(len(korelacione_kolone)), korelacione_kolone, rotation=45, ha="right")
+plt.yticks(np.arange(len(korelacione_kolone)), korelacione_kolone)
+
+for i in range(len(korelacione_kolone)):
+    for j in range(len(korelacione_kolone)):
+        plt.text(j, i, f"{korelacije.iloc[i, j]:.2f}", ha="center", va="center")
+
+plt.title("Korelaciona matrica numerickih atributa")
+sacuvaj_sliku("02_korelaciona_matrica_numerickih_atributa.png")
+
+print("\nKorelaciona matrica:")
+print(korelacije.round(2))
+
+plt.figure(figsize=(8, 5))
+podaci_model[["BrojPobeda", "BrojNajbrzihKrugova"]].boxplot()
+plt.title("Anomalije u numerickim atributima")
+plt.ylabel("Vrednost")
+sacuvaj_sliku("03_anomalije_numerickih_atributa.png")
+
+print("\nNajvece vrednosti po broju pobeda i najbrzih krugova:")
+print(
+    podaci[
+        ["Godina", "NazivVozaca", "Tim", "BrojPobeda", "BrojNajbrzihKrugova", "Top3Plasman"]
+    ]
+    .sort_values(by=["BrojPobeda", "BrojNajbrzihKrugova"], ascending=False)
+    .head(10)
+)
+
 top_vozaci = (
     podaci.groupby("NazivVozaca")["BrojPobeda"]
     .sum()
